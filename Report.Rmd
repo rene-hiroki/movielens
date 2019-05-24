@@ -1,0 +1,105 @@
+---
+title: "Recommendation System on Movielens"
+author: "rene_hiroki"
+date: "2019/5/24"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+On this report, we will build recommendation systems. We use the MovieLens 10M dataset provided by Grouplens(<https://grouplens.org>). You can download the dataset we use from here(<https://drive.google.com/drive/folders/1IZcBBX0OmL9wu9AdzMBFUG8GoPbGQ38D>). The purpose of our recommendation system is to predict what rating a particular user will give a specific movie. Because, movies for which a high rating is predicted for a given user are then recommended to that user.
+
+In Analysis section, we analyze the data and create machine learning models by following processes,
+
+1. define a loss function by RMSE
+2. create a simplest model
+3. create movie effects model
+4. create movie and user effects model
+5. create regularized movie and user effects model
+
+Then, We will evaluate our models in Result section and choose the best model for recommendation system in Conclusion section. 
+
+
+# Analysis
+
+
+First of all, download the data and required packages.
+```{r download packages, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+edx <- readRDS(" ~ depends on your computer ~ /edx.rds")   
+validation <- readRDS(" ~ depends on your computer ~ /validation.rds")
+
+```{r load the dataset, include=FALSE}
+# edx <- readRDS("C:/R/Rproject/movielens/edx.rds")
+# validation <- readRDS("C:/R/Rproject/movielens/validation.rds")
+```
+
+Then, glance at the dataset structure.
+
+
+
+## 1. Define loss function by RMSE
+
+We use residual mean squared error (RMSE) on a validation set as a loss function. We define $y_{u,i}$ as the rating for movie $i$ by user $u$ and denote our prediction with $\hat{y}_{u,i}$. The RMSE is then defined as:
+$$
+RMSE = \sqrt{ \frac{1}{N} \sum_{u,i} (\hat{y}_{u,i} - y_{u,i})^2 }
+$$
+with $N$ being the number of user/movie combinations and the sum occurring over all these combinations.
+
+```{r define loss function, include=FALSE}
+RMSE <- function(predicted_ratings, true_ratings){
+    sqrt(mean((predicted_ratings - true_ratings)^2))
+}
+```
+
+
+## 2. create a simplest model
+
+Our first model is the simplest. We predict the same rating for all movies regardless of user. A model we assume is like this: 
+
+$$
+Y_{u,i} = \mu + \epsilon_{u,i}
+$$
+with $\epsilon_{u,i}$ independent errors sampled from the same distribution centered at 0 and $\mu$ the “true” rating for all movies. We estimate $\hat{\mu}$ by taking average of all rating. Then, calculate the RMSE of this model.
+
+```{r Just the average, include=FALSE}
+mu_hat <- mean(edx$rating)
+mu_hat
+
+naive_rmse <- RMSE(mu_hat, validation$rating)
+naive_rmse
+
+rmse_results <- tibble(method = "Just the average", RMSE = naive_rmse)
+rmse_results %>% knitr::kable()
+```
+
+We get a RMSE of about 1.
+
+## 3. create movie effects model
+
+
+## 4. create movie and user effects model
+
+
+## 5. create regularized movie and user effects model
+
+
+
+
+# Result
+
+# conclusion
+
+
+
+$$
+\mu_i + 3
+$$
+
