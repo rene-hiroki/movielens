@@ -185,7 +185,7 @@ RMSE = `r model_2_rmse`
 
 \clearpage
 
-# Result
+# 3. Result
 
 ```{r show the results table, echo=FALSE}
 rmse_results %>% knitr::kable()
@@ -193,7 +193,7 @@ rmse_results %>% knitr::kable()
 
 We built three models "simplest model", "Movie Effect Model", and "Movie and User Effects Model". The performances of these models are shown above table. As you can see, "Movie and User Effects Model" has the best performance, **RMSE = 0.8653488** .
 
-# conclusion
+# 4. conclusion
 
 We built the recommendation system by using "Movie and User Effects Model".  
 

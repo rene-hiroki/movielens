@@ -86,7 +86,7 @@ predicted_ratings <- validation %>%
     pull(pred)
 
 # calculate RMSE
-RMSE(predicted_ratings, validation$rating)
+RMSE(predicted_ratings, validation$rating) 
 
 # seve the result on the table
 model_2_rmse <- RMSE(predicted_ratings, validation$rating)
