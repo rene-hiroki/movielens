@@ -1,56 +1,48 @@
 ---
 title: "Recommendation System for Movielens"
 author: "rene_hiroki"
-date: "2019/5/24"
+date: "`r format(Sys.time(), '%Y/%m/%d')`"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
-# 1. Introduction
-
-In this report, we will build recommendation systems for the MovieLens 10M dataset provided by Grouplens(<https://grouplens.org>). You can download the dataset we use from this [*link*](https://drive.google.com/drive/folders/1IZcBBX0OmL9wu9AdzMBFUG8GoPbGQ38D). The purpose of our recommendation system is to predict what rating a particular user will give a specific movie. Because, movies for which a high rating is predicted for a given user are then recommended to that user. We define a loss function by RMSE to evaluate our models. Our goal is minimizing RMSE as possible as we can.
-
-In Analysis section, we analyze the data and create machine learning models by following processes,
-
-1. Define a loss function by RMSE
-2. Build a simplest model
-3. Build movie effects model
-4. Build movie and user effects model
-
-Then, We will evaluate our models in Result section and choose the best model for recommendation system in Conclusion section. 
-
-
-# 2. Analysis
-
-
-First of all, load the data and packages.   
-
-```{r load the dataset, cache=TRUE}
-edx <- readRDS("C:/R/Rproject/movielens/edx.rds")
-validation <- readRDS("C:/R/Rproject/movielens/validation.rds")
-```
-
-```{r load packages, message=FALSE}
 library(dplyr)
 library(ggplot2)
 ```
 
+```{r load the dataset, include=FALSE}
+edx <- readRDS("C:/R/Rproject/movielens/edx.rds")
+validation <- readRDS("C:/R/Rproject/movielens/validation.rds")
+```
 
-Then, glance at the dataset structure.
+# 1. Introduction
 
-```{r grance at data structure}
+In this report, we will build a recommendation system for the MovieLens 10M dataset that is provided by Grouplens(<https://grouplens.org>). You can download the dataset we use from this [*link*](https://drive.google.com/drive/folders/1IZcBBX0OmL9wu9AdzMBFUG8GoPbGQ38D). **edx** is train set, **validation** is test set. Then, glance at the dataset structure:  
+```{r grance at dataset}
 glimpse(edx)
 
 glimpse(validation)
 ```
 
-We can see that how many obsevations and variables are in the datasets, and also see that what data types they are. 
+We can see that how many observations and variables are in the datasets, and also see that what data types they are. 
 
+The purpose of our recommendation system is to predict what rating a particular user will give a specific movie. Because, movies for which a high rating is predicted for a given user are then recommended to that user. We define a loss function by RMSE to evaluate our models. Our goal is minimizing RMSE as possible as we can.
 
-### 2.1. Define loss function by RMSE
+In Analysis section, we analyze the data and build machine learning models by following processes,
+
+1. Define a loss function by RMSE
+2. Build a Simplest Model
+3. Build a Movie Effects Model
+4. Build a Movie and User Effects Model
+
+Then, We will evaluate our models in Result section and choose the best model for recommendation system in Conclusion section. 
+
+\clearpage
+
+# 2. Analysis
+
+## 2.1. Define loss function by RMSE
 
 We use Root Mean Squared Error (RMSE) as a loss function. We define $y_{u,i}$ as the rating for movie $i$ by user $u$ and denote our prediction with $\hat{y}_{u,i}$. The RMSE is then defined as:
 $$
@@ -64,8 +56,7 @@ RMSE <- function(predicted_ratings, true_ratings){
 }
 ```
 
-
-### 2.2. Create a simplest model
+## 2.2. Build a Simplest Model
 
 Our first model is the simplest. We predict the same rating for all movies regardless of user. A model we assume is like this: 
 
@@ -81,7 +72,7 @@ edx %>% ggplot(aes(rating)) +
     geom_histogram(bins = 10, color = I("black"))
 ```
 
-We can see that 4 is most counted and 3 is the second. Form histgram, average rating would fall on the between 3 and 4. 
+We can see that 4 is most counted and 3 is the second. Form histogram, average rating would fall on the between 3 and 4. 
 
 Then, estimate average rating $\hat{\mu}$ by taking average.
 
@@ -102,17 +93,17 @@ naive_rmse
 RMSE = `r naive_rmse`  
 
 ```{r save the result, include=FALSE}
-rmse_results <- tibble(method = "Just the average", RMSE = naive_rmse)
+rmse_results <- tibble(method = "Simplest Model", RMSE = naive_rmse)
 ```
 
 
-### 2.3. Create movie effects model
+## 2.3. Build a Movie Effects Model
 
 We know from experience that each movie's rating has propensity for high or low rating. We can augment our previous model by adding the term $b_i$ to represent average rating for movie $i$:
 $$
 Y_{u,i} = \mu + b_i + \epsilon_{u,i}
 $$
-We estimate $\hat{b_i}$ by taking average of $Y_{u,i} - \mu$ for each movie $i$. Let's see the histgram of $b_i$.
+We estimate $\hat{b_i}$ by taking average of $Y_{u,i} - \mu$ for each movie $i$. Let's see the histogram of $b_i$.
 
 ```{r estimate b_i movie effects, include=FALSE}
 mu <- mean(edx$rating) 
@@ -126,7 +117,7 @@ movie_avgs %>% ggplot(aes(b_i)) +
     geom_histogram(bins = 10, color = I("black"))
 ```
 
-We can confirm that movie bias is exist from this histgram. Thus, our movie effects model should work. Let's predict rating and calculate RMSE.  
+We can confirm that movie bias is exist from this histogram. Thus, our movie effects model should work. Let's predict rating and calculate RMSE.  
 
 ```{r predict rating by movie effects model, include=FALSE}
 predicted_ratings <- mu + validation %>% 
@@ -144,10 +135,11 @@ rmse_results <- bind_rows(rmse_results,
 
 RMSE = `r model_1_rmse`
 
+\clearpage
 
-### 2.4. create movie and user effects model
+## 2.4. Build a Movie and User Effects Model
 
-As well as movie effects, there would be user effects. To confirm that, let's see the histgram of the average rating for user $u$ for those that have rated over 100 movies:  
+As well as movie effects, there would be user effects. To confirm that, let's see the histogram of the average rating for user $u$ for those that have rated over 100 movies:  
 
 ```{r histgram of each user rating average, echo=FALSE}
 edx %>% 
@@ -191,6 +183,7 @@ rmse_results <- bind_rows(rmse_results,
 
 RMSE = `r model_2_rmse`
 
+\clearpage
 
 # Result
 
@@ -198,5 +191,14 @@ RMSE = `r model_2_rmse`
 rmse_results %>% knitr::kable()
 ```
 
+We built three models "simplest model", "Movie Effect Model", and "Movie and User Effects Model". The performances of these models are shown above table. As you can see, "Movie and User Effects Model" has the best performance, **RMSE = 0.8653488** .
 
 # conclusion
+
+We built the recommendation system by using "Movie and User Effects Model".  
+
+$$
+Y_{u,i} = \mu + b_i + b_u + \epsilon_{u,i}
+$$
+
+RMSE = 0.8653488 means that, on average, we predict rating with the error 0.8653488, that's not bad.
