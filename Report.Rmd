@@ -18,7 +18,7 @@ validation <- readRDS("C:/R/Rproject/movielens/validation.rds")
 
 # 1. Introduction
 
-In this report, we will build a recommendation system for the MovieLens 10M dataset that is provided by Grouplens(<https://grouplens.org>). You can download the dataset we use from this [*link*](https://drive.google.com/drive/folders/1IZcBBX0OmL9wu9AdzMBFUG8GoPbGQ38D). **edx** is train set, **validation** is test set. Then, glance at the dataset structure:  
+In this report, we will build a recommendation system for the MovieLens 10M dataset that is provided by Grouplens(<https://grouplens.org>). You can download the dataset we use from this [*link*](https://drive.google.com/drive/folders/1IZcBBX0OmL9wu9AdzMBFUG8GoPbGQ38D). **edx** is train set, **validation** is test set. Let'S glance at the dataset structure:  
 ```{r grance at dataset}
 glimpse(edx)
 
